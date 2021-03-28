@@ -6,7 +6,7 @@ module.exports = function repeater(str, options) {
   if (str === null) {
     newstr = "null";
   } else {
-    newstr = str.toString();
+    newstr = "" + str;
   }
   let repeatTimes = 0;
   let separator = "+";
@@ -19,7 +19,7 @@ module.exports = function repeater(str, options) {
   if (options) {
     repeatTimes = options.repeatTimes ? options.repeatTimes : 0;
     separator = options.separator ? options.separator : "+";
-    addition = options.addition ? options.addition.toString() : "";
+    addition = options.addition ? "" + options.addition : "";
     additionRepeatTimes = options.additionRepeatTimes
       ? options.additionRepeatTimes
       : 0;
