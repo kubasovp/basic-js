@@ -6,8 +6,8 @@ class VigenereCipheringMachine {
   }
 
   encrypt(message, key) {
-    if (this.message === undefined || this.key === undefined) {
-      // throw new Error;
+    if (message === undefined || key === undefined) {
+      throw new Error();
     }
     const ABC = {
       A: 0,
@@ -39,11 +39,22 @@ class VigenereCipheringMachine {
     };
     let string = message.toUpperCase();
     let numStrArr = [];
+    let tempKey = "";
+    let newKey = "";
+    if (string.length > key.length) {
+      tempKey = key.repeat(Math.ceil(string.length / key.length));
+      newKey = tempKey
+        .slice(0, -(tempKey.length - string.length))
+        .toUpperCase();
+    } else if (string.length === key.length) {
+      newKey = key.toUpperCase();
+    } else {
+      tempKey = key.toUpperCase();
+      newKey = tempKey
+        .slice(0, -(tempKey.length - string.length))
+        .toUpperCase();
+    }
 
-    let tempKey = key.repeat(Math.ceil(string.length / key.length));
-    let newKey = tempKey
-      .slice(0, -(tempKey.length - string.length))
-      .toUpperCase();
     let numStrKey = [];
 
     string.split("").map((el) => {
@@ -62,21 +73,20 @@ class VigenereCipheringMachine {
       }
     });
 
+    let resNumArr = [];
     for (let i = 0; i < numStrArr.length; i++) {
       if (typeof numStrArr[i] === "string") {
-        numStrArr[i] = numStrKey[i];
-      } else if (numStrArr[i] + numStrKey[i] > 26) {
-        numStrArr[i] = numStrArr[i] + numStrKey[i] - 26;
+        resNumArr.push(numStrArr[i]);
+        numStrKey.splice(i, 0, " ");
+      } else if (numStrArr[i] + numStrKey[i] >= 26) {
+        resNumArr.push(numStrArr[i] + numStrKey[i] - 26);
       } else {
-        numStrArr[i] = numStrArr[i] + numStrKey[i];
+        resNumArr.push(numStrArr[i] + numStrKey[i]);
       }
     }
-    // [ 0, 19, 19, 0, 2, 10, " ", 0, 19, " " ]
-    // [ 0, 11, 15, 7, 14, 13, 18, 4, 0, 11 ]
-    // [ 0, 4, 8, 7, 16, 23, " ", 4, 19, " " ]
 
     let resArr = [];
-    numStrArr.forEach((el) => {
+    resNumArr.forEach((el) => {
       if (typeof el === "number") {
         resArr.push(Object.keys(ABC).find((key) => ABC[key] === el));
       } else {
@@ -84,9 +94,7 @@ class VigenereCipheringMachine {
       }
     });
 
-    console.log("numStrArr", numStrArr);
-    console.log("numStrKey", numStrKey);
-    console.log("resArr", resArr.join(""));
+    return this.mode ? resArr.join("") : resArr.reverse().join("");
   }
 
   decrypt(encryptedMessage, key) {
